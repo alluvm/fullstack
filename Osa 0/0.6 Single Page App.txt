@@ -1,0 +1,19 @@
+title 0.6: Single Page App
+
+
+selain -> palvelin: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note_spa
+palvelin --> selain: 201 Created
+
+note over selain:
+Lähetetään palvelimelle uuden muistiinpanon
+tiedot payloadina json muodossa. 
+Payload on muotoa {content: "", date: ""}
+
+Sivua ei ladata uudestaan. spa.js tiedostosta ladattu javascript
+ajetaan ja uusi muistiinpano lisätään listaan.
+end note
+
+note over selain:
+Ennen tämän tapahtuvaa HTTP POST pyyntöä 
+on ajettu tehtävän 0.5 pyynnöt
+end note

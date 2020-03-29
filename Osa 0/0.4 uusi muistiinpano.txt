@@ -1,0 +1,29 @@
+title 0.4: uusi muistiinpano
+
+selain -> palvelin: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note
+palvelin --> selain: HTTP 304 redirect to location = '/notes'
+note over selain: 
+HTTP post lähettää muistiinpanoni Form Data headerissa
+'note: :D' jonka jälkeen siitä tehdään objekti.
+Objekti lisätään Notes taulukkoon.
+end note
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/notes
+palvelin-->selain: HTML-koodi
+selain -> palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.css
+palvelin --> selain: main.css
+selain -> palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.js
+palvelin --> selain: main.js
+
+note over selain:
+selain alkaa suorittaa js-koodia
+joka pyytää JSON-datan palvelimelta
+end note
+
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/data.json
+palvelin-->selain: [{ content: "HTML is easy", date: "2019-05-23" }, ...]
+
+note over selain:
+selain suorittaa tapahtumankäsittelijän
+joka renderöi muistiinpanot näytölle.
+JSON tiedostoon on lisätty viimeisimmäksi testimuistiinpanoni.
+end note
