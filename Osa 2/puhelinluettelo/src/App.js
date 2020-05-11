@@ -22,21 +22,28 @@ const App = () => {
 
   const handleClick = (event) => {
     event.preventDefault()
-    const chck = persons.map((dude) => dude.name).includes(newName)
-    if (!chck) {
 
-      const personObject = {
-        name: newName,
-        number: newNumber
-      }
+    const person = persons.find((dude) => dude.name === newName)
+    
+    if (!person) {
+      const personObject = {number: newNumber, name: newName}
 
       service.create(personObject).then(response => {
         setPersons(persons.concat(response))
       })
       
     } else {
-      const msg = `${newName} is already added to phonebook`
-      window.alert(msg)
+
+      const personObject = {...person, number: newNumber}
+      const msg = `${newName} is already added to phonebook, replace the old number with a new one?`
+
+      if(window.confirm(msg)) {
+        service.update(person.id, personObject)
+        .then(response => 
+          setPersons(persons.map(dude => dude.name === personObject.name ? personObject : dude)
+          ))
+
+      }
     }
   }
   
@@ -44,7 +51,7 @@ const App = () => {
     event.preventDefault()
  
     const confm = window.confirm("delete " + person.name + " ?")
-    
+
     if(confm) service.remove(person.id).then(() => {
       setPersons(persons.filter(n => n.id !== person.id))
     })
