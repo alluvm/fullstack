@@ -3,16 +3,20 @@ import Country from "./Country"
 
 
 const Listed = ({country}) => {
-    const [show, setShow] = useState(false)
 
+    // tämän osan voisi siirtää app.js ja siirtää staten muutaman komponentin läpi.
+    // Nykyinen ratkaisu vaikutti kätevämmältä, vaikka varmasti onkin järkevämpiä tapoja tehdä.
+
+    const [show, setShow] = useState(false)
     const handleClick = () => setShow(!show)
+    let btn = show
+    if(show) {btn = "hide"} else btn = "show"
     
 
     return (
         <div>
-            {country.name}
-            <button onClick={handleClick}>Show</button> 
-            {show ? <Country country={country}></Country> : null}
+            {show ? <Country country={country}></Country> : country.name}
+            <button onClick={handleClick}>{btn}</button> 
         </div>
 
     )
