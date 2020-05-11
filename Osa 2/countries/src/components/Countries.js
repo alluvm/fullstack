@@ -3,7 +3,7 @@ import Country from "./Country"
 import Listed from "./Listed"
 
 
-const Countries = ({Countries, filter}) => {
+const Countries = ({Countries, filter, handleClick, show}) => {
 
     const filtered = Countries.filter((country) => country.name.toLowerCase().includes(filter.toLowerCase()))
     const size = filtered.length
@@ -15,7 +15,14 @@ const Countries = ({Countries, filter}) => {
         )
     } else if(size < 11){
         return (
-            filtered.map((country,i)=> <Listed country={country} key={i}/>)
+            filtered.map((country,i)=> 
+                <Listed
+                    country={country} 
+                    handleClick={handleClick}
+                    show={show}
+                    key={i}
+                />
+            )
         )
     } else {
         return (

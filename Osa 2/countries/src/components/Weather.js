@@ -10,7 +10,8 @@ const Weather = ({location}) => {
     const api_key = process.env.REACT_APP_API_KEY
     const params = {
         "access_key":api_key,
-        "query":location
+        "query":location,
+        "unit": "m"
     }
 
     
@@ -28,9 +29,18 @@ const Weather = ({location}) => {
     return (
     <div>
         <h4>Weather in {location}</h4>
-            <p>temperature: {weather.temperature} Celsius</p> 
-            <img src={weather.weather_icons} alt={weather.weather_descriptions}></img>
-        <h4>Wind: {weather.wind_speed} mph direction {weather.wind_dir}</h4>
+            <p>
+                <b>temperature: </b>
+                {weather.temperature} Celsius
+            </p> 
+            <img 
+                src={weather.weather_icons}
+                alt={weather.weather_descriptions}>
+            </img>
+            <p>
+                <b>Wind: </b>
+                {weather.wind_speed} Km/h direction {weather.wind_dir}
+            </p>
 
     </div>       
     )

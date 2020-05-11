@@ -8,6 +8,7 @@ function App() {
   const [countries, setCountries] = useState([])
   const [searchTerm, setTerm] = useState("")
 
+
   const hook = () => {
     axios.get("https://restcountries.eu/rest/v2/all").then(response => {
       setCountries(response.data)
@@ -19,13 +20,16 @@ function App() {
     setTerm(value)
   }
 
+
   useEffect(hook,[])
 
 
   return (
     <div>
       <Search setTerm={handleSearch}/>
-      <Countries Countries={countries} filter={searchTerm}/>
+      <Countries Countries={countries}
+       filter={searchTerm}
+       />
     </div>
   );
 }
