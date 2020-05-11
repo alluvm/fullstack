@@ -3,6 +3,7 @@ import Filter from "./components/Filter"
 import PersonForm from "./components/PersonForm"
 import Persons from "./components/Persons"
 import axios from "axios"
+import service from "./services/puhelinluettelo"
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -22,14 +23,32 @@ const App = () => {
   const handleClick = (event) => {
     event.preventDefault()
     const chck = persons.map((dude) => dude.name).includes(newName)
-    if(!chck) {
-    setPersons(persons.concat({name: newName, number: newNumber}))
+    if (!chck) {
+
+      const personObject = {
+        name: newName,
+        number: newNumber
+      }
+
+      service.create(personObject).then(response => {
+        setPersons(persons.concat(response))
+      })
+      
     } else {
       const msg = `${newName} is already added to phonebook`
       window.alert(msg)
     }
   }
-
+  
+  const handleDelete = (event, person) => {
+    event.preventDefault()
+ 
+    const confm = window.confirm("delete " + person.name + " ?")
+    
+    if(confm) service.remove(person.id).then(() => {
+      setPersons(persons.filter(n => n.id !== person.id))
+    })
+  }
 
   const handleFilter = (event) => {
     const val = event.target.value
@@ -54,7 +73,7 @@ const App = () => {
       <h2>add a new</h2>
         <PersonForm handleName = {handleName} handleClick= {handleClick} handlePhone={handlePhone}></PersonForm>
       <h2>Numbers</h2>
-        <Persons people={persons} filter={newFilter}></Persons>
+        <Persons people={persons} filter={newFilter} handleDelete={handleDelete}></Persons>
     </div>
   )
 

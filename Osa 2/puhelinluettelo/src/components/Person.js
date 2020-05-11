@@ -1,9 +1,15 @@
 import React from 'react'
 
-const Person = ({name, phone}) => {
+const Person = ({object, handleDelete}) => {
     return (
         <>
-         <ul>{name} {phone}</ul>
+         <ul>
+             {object.name} {object.number} <button onClick={(event)=> {
+                console.log(event)
+                handleDelete(event,object)}}>
+                    
+                delete</button>
+         </ul>
         </>
     )
 } 
