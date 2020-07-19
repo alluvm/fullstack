@@ -1,9 +1,25 @@
 const http = require('http')
 const express = require("express")
 const app = express()
+const morgan = require("morgan")
+const cors = require('cors')
 
+
+const format = ":method :url :status :res[content-length] - :response-time ms"
+
+app.use(cors())
+app.use(morgan('tiny'))
 app.use(express.json()) 
+app.use(cors())
 
+
+morgan.token('custom', function(req,res) {
+  if(req.method == POST)
+  return [
+    res.method
+  ]
+
+})
 
 let persons = [
       {
@@ -30,20 +46,21 @@ let persons = [
   
 
   const generateId = () => {
-    const maxId = persons.length > 0
-      ? Math.max(...persons.map(n => n.id))
-      : 0
-    return maxId + 1
+    return Math.floor(Math.random()*999999)
   }
   
   app.post('/api/persons', (request, response) => {
     const body = request.body
-  
     if (!body.content) {
       return response.status(400).json({ 
-        error: 'content missing' 
+        error: 'Name or phone is missing' 
       })
-    }1
+    } 
+    const check = persons.find(person => person.name === body.name)
+    if(check) {
+      return response.status(400).json({error : "Name must be unique"})
+    }
+    
   
     const person = {
       name: body.name,
@@ -60,6 +77,27 @@ let persons = [
     res.send('<h1>Hello World!</h1>')
   })
   
+  const info = () => {
+    date = new Date()
+
+    const html = `
+    <div>
+      <p>
+        Phonebook has info for ${persons.length} people
+      </p>
+      <p>
+       ${date.toString()}
+      </p>
+    </div>
+  `
+    return html
+
+  } 
+
+  app.get('/info', (req, res) => {
+    res.send(info())
+  })
+
   app.get('/api/persons', (req, res) => {
     res.json(persons)
   })
@@ -67,8 +105,19 @@ let persons = [
   app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
     const person = persons.find(person => person.id === id)
+ 
     if (person) {
-        response.json(person)
+        const html = `
+        <div>
+          <p>
+            ${person.name}
+          </p>
+          <p>
+          ${person.number}
+          </p>
+        </div>
+      `
+        response.send(html)
       } else {
         response.status(404).end()
       }
