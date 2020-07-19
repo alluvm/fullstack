@@ -2,16 +2,12 @@ const http = require('http')
 const express = require("express")
 const app = express()
 const morgan = require("morgan")
-const cors = require('cors')
+const cors = require("cors")
 
-
-const format = ":method :url :status :res[content-length] - :response-time ms"
 
 app.use(cors())
 app.use(morgan('tiny'))
 app.use(express.json()) 
-app.use(cors())
-
 
 morgan.token('custom', function(req,res) {
   if(req.method == POST)
@@ -107,17 +103,7 @@ let persons = [
     const person = persons.find(person => person.id === id)
  
     if (person) {
-        const html = `
-        <div>
-          <p>
-            ${person.name}
-          </p>
-          <p>
-          ${person.number}
-          </p>
-        </div>
-      `
-        response.send(html)
+        response.json(person)
       } else {
         response.status(404).end()
       }
