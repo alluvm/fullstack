@@ -7,15 +7,7 @@ const cors = require("cors")
 
 app.use(cors())
 app.use(morgan('tiny'))
-app.use(express.json()) 
-
-morgan.token('custom', function(req,res) {
-  if(req.method == POST)
-  return [
-    res.method
-  ]
-
-})
+app.use(express.static('build'))
 
 let persons = [
       {

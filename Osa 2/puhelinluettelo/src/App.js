@@ -2,24 +2,18 @@ import React, { useState, useEffect } from 'react'
 import Filter from "./components/Filter"
 import PersonForm from "./components/PersonForm"
 import Persons from "./components/Persons"
-import axios from "axios"
 import service from "./services/puhelinluettelo"
 import Notification from "./components/Notification"
 import "./index.css"
 
 const App = () => {
   const [persons, setPersons] = useState([])
-  const [ newName, setNewName ] = useState('')
-  const [ newNumber, setNewNumber ] = useState("")
-  const [ newFilter, setNewFilter ] = useState("")
-  const [ notification, setNotifcation ] = useState()
+  const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState("")
+  const [newFilter, setNewFilter] = useState("")
+  const [notification, setNotifcation] = useState()
 
-  const hook = () => {
-
-    service.getAll().then(response => {setPersons(response.data)})
-  }
-
-  useEffect(hook,[])
+  useEffect(() => {service.getAll().then(people => {setPersons(people)})},[])
 
 
   const notify = (notifObj) => {
