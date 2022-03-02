@@ -1,108 +1,99 @@
 import React, { useState, useEffect } from 'react'
-import Filter from "./components/Filter"
-import PersonForm from "./components/PersonForm"
-import Persons from "./components/Persons"
-import service from "./services/puhelinluettelo"
-import Notification from "./components/Notification"
-import "./index.css"
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import Persons from './components/Persons'
+import Notification from './components/Notification'
+import personService from './services/persons'
 
 const App = () => {
-  const [persons, setPersons] = useState([])
+  const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
-  const [newNumber, setNewNumber] = useState("")
-  const [newFilter, setNewFilter] = useState("")
-  const [notification, setNotifcation] = useState()
+  const [newNumber, setNewNumber] = useState('')
+  const [filter, setFilter] = useState('')
+  const [notification, setNotification] = useState(null)
 
-  useEffect(() => {service.getAll().then(people => {setPersons(people)})},[])
+  useEffect(() => {
+    personService.getAll().then(persons => {
+      setPersons(persons)
+    })
+  }, [])
 
-
-  const notify = (notifObj) => {
-    setNotifcation(notifObj)
+  const notify = (message, type='info') => {
+    setNotification({ message, type })
     setTimeout(() => {
-      setNotifcation(null)
-    }, 2000)
+      setNotification(null)
+    }, 3000)
   }
 
-  const handleClick = (event) => {
+  const addPerson = (event) => {
     event.preventDefault()
+    const newPerson = {
+      name: newName,
+      number: newNumber
+    }
 
-    const person = persons.find((dude) => dude.name === newName)
-    
-    if (!person) {
-      const personObject = {number: newNumber, name: newName}
-      const msg = "Added " + personObject.name
-      const notifObj = {msg: msg, type: "success"}
+    setNewName('')
+    setNewNumber('')
 
-      service.create(personObject).then(response => {
-        setPersons(persons.concat(response))
-        notify(notifObj)
-      })
-      
-    } else {
+    const existingPerson = persons.find(p => p.name === newPerson.name)
+    if ( existingPerson ) {
+      const ok = window.confirm(`${existingPerson.name} is already added to phonebook, update the number?`)
+      if ( ok ) {
 
-      const personObject = {...person, number: newNumber}
-      const msg = `${newName} is already added to phonebook, replace the old number with a new one?`
+        personService.update(existingPerson.id, {...existingPerson, number: newNumber }).then(savedPerson => {
+          setPersons(persons.map(p => p.id === existingPerson.id ? savedPerson : p ))
+          notify(`Updated info of ${savedPerson.name}`)
+        })
+        .catch(error => {
+          notify(
+            `the person '${existingPerson.name}' was had already been from the server`, 'alert'
+          )
+          setPersons(persons.filter(p => p.id !== existingPerson.id))
+        })
 
-      if(window.confirm(msg)) {
-        service.update(person.id, personObject)
-        .then(() => {
-          setPersons(persons.map(dude => dude.name === personObject.name ? personObject : dude))
-          const msg = "Succesfully changed " + person.name + " phone number"
-
-          const notifObj = {
-            msg: msg,
-            type: "success"
-          }
-          notify(notifObj)
-          }).catch((error) => {
-            const msg = "Information of " + personObject.name + " has already been deleted from the server"
-            const notifObj = {msg: msg, type: "error"}
-            notify(notifObj)
-          })
+        return 
       }
     }
-  }
 
-
-  const handleDelete = (event, person) => {
-    event.preventDefault()
- 
-    const confm = window.confirm("delete " + person.name + " ?")
-
-    if(confm) service.remove(person.id).then(() => {
-      const msg = "Succesfully deleted " + person.name
-      const notifObj = {msg: msg, type: "success"}
-
-      setPersons(persons.filter(n => n.id !== person.id))
-      notify(notifObj)
+    personService.create(newPerson).then(savedPerson => {
+      setPersons(persons.concat(savedPerson))
+      notify(`Added ${savedPerson.name}`)
     })
   }
 
-  const handleFilter = (event) => {
-    const val = event.target.value
-    console.log(newFilter)
-    setNewFilter(val)
+  const deletePerson = (id) => { 
+    const toDelete = persons.find(p => p.id === id)
+    const ok = window.confirm(`Delete ${toDelete.name}`)
+    if (ok) {
+      personService.remove(id).then(() => {
+        setPersons(persons.filter(p => p.id !== id))
+        notify(`Deleted ${toDelete.name}`)
+      })  
+    }
   }
-
-  const handleName = (event) => {
-    const value = event.target.value
-    setNewName(value)
-  }
-
-  const handlePhone = (event) => {
-    const value = event.target.value
-    setNewNumber(value)
-  }
+ 
+  const personsToShow = (filter.length === 0) ? persons :
+    persons.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()))
 
   return (
     <div>
       <h2>Phonebook</h2>
-        <Notification notif={notification}/>
-        <Filter handleFilter={handleFilter}></Filter>
-      <h2>add a new</h2>
-        <PersonForm handleName = {handleName} handleClick= {handleClick} handlePhone={handlePhone}></PersonForm>
-      <h2>Numbers</h2>
-        <Persons people={persons} filter={newFilter} handleDelete={handleDelete}></Persons>
+      <Notification notification={notification} />
+      <Filter
+        value={filter}
+        handleChange={({ target }) => setFilter(target.value)}
+      />
+      <PersonForm 
+        name={newName}
+        number={newNumber}
+        handleNameChange={({ target }) => setNewName(target.value)}
+        handleNumberChange={({ target }) => setNewNumber(target.value)}
+        addPerson={addPerson}
+      />
+      <Persons
+        persons={personsToShow}
+        handleDelete={deletePerson}
+      />
     </div>
   )
 

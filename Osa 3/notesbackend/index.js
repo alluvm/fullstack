@@ -1,12 +1,15 @@
 const express = require('express')
 const app = express()
+const bodyParser = require('body-parser')
+require('dotenv').config()
+const Note = require('./models/note')
 
 const cors = require('cors')
 
 app.use(cors())
-app.use(express.json())
+app.use(bodyParser.json())
 app.use(express.static('build'))
-//MD
+
 let notes = [
   {
     id: 1,
@@ -29,15 +32,19 @@ let notes = [
 ]
 
 app.get('/api/notes', (req, res) => {
-  res.json(notes)
+  Note.find({}).then(notes =>{
+    res.json(notes.map(note => note.toJSON()))
+  })
 })
 
+/*
 const generateId = () => {
   const maxId = notes.length > 0
     ? Math.max(...notes.map(n => n.id))
     : 0
   return maxId + 1
 }
+*/
 
 app.post('/api/notes', (request, response) => {
   const body = request.body
@@ -48,27 +55,24 @@ app.post('/api/notes', (request, response) => {
     })
   }
 
-  const note = {
+  const note = new Note ({
     content: body.content,
     important: body.important || false,
     date: new Date(),
-    id: generateId(),
-  }
+  })
+  
+  note.save().then(note => {
+    response.json(note.toJSON())
+  })
 
-  notes = notes.concat(note)
-
-  response.json(note)
 })
 
 app.get('/api/notes/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const note = notes.find(note => note.id === id)
-  if (note) {
-    response.json(note)
-  } else {
-    response.status(404).end()
-  }
+  Note.findById(request.params.id).then(note => {
+    response.json(note.toJSON())
+  })
 })
+
 
 app.delete('/api/notes/:id', (request, response) => {
   const id = Number(request.params.id)
@@ -77,7 +81,8 @@ app.delete('/api/notes/:id', (request, response) => {
   response.status(204).end()
 })
 
-const PORT = process.env.PORT || 3001
+
+const PORT = 3001
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)

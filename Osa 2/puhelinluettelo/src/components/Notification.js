@@ -1,18 +1,26 @@
 import React from "react"
 
 
-const Notification = ({notif}) => {
-    if(!notif) return null
-    console.log(notif.type)
+const Notification = ({ notification }) => {
+    if (notification === null) {
+      return null
+    }
+  
+    const style = {
+      color: notification.type === 'alert' ? 'red' : 'green',
+      background: 'lightgrey',
+      fontSize: 20,
+      borderStyle: 'solid',
+      borderRadius: 5,
+      padding: 10,
+      marginBottom: 10
+    }
+  
     return (
-
-        <div className={notif.type}>
-            {notif.msg}
-        </div>
-
+      <div style={style}>
+        {notification.message}
+      </div>
     )
-
-}
-
-
-export default Notification
+  }
+  
+  export default Notification

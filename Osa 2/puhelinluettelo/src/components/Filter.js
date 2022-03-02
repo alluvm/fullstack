@@ -1,13 +1,14 @@
-import React from 'react'
+import React from "react"
 
 
+const Filter = ({ value, handleChange }) => {
+  return <>
+    Filter shown with
+    <input
+      value={value}
+      onChange={handleChange}
+    />
+  </>
+}
 
-const Filter = ({handleFilter}) => {
-    return ( 
-      <div>
-        <p>Filter shown with <input onChange={handleFilter}></input></p>
-      </div>
-    )
-  }
-
-  export default Filter
+export default Filter

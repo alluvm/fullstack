@@ -1,16 +1,18 @@
 import React from 'react'
-import Person from "./Person"
 
 
-const Persons = ({people, filter, handleDelete}) => {
-    return (
-    <>
-      {people.map((dude,i) =>  
-      dude.name.toLowerCase().includes(filter.toLowerCase()) 
-      ? <Person object={dude} handleDelete={handleDelete} key={i}/> 
-      : null )}
-    </>
-    )
+const Persons = ({ persons, handleDelete }) => {
+  return <>
+    <h2>Numbers</h2>
+    {persons.map(person =>
+      <p key={person.id}>
+        {person.name} {person.number}
+        <button onClick={()=>handleDelete(person.id)}>
+          delete
+        </button>
+      </p>
+    )}
+  </>
 }
 
 export default Persons

@@ -3,11 +3,14 @@ const express = require("express")
 const app = express()
 const morgan = require("morgan")
 const cors = require("cors")
-
+var bodyParser = require('body-parser');
 
 app.use(cors())
 app.use(morgan('tiny'))
 app.use(express.static('build'))
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 let persons = [
       {
@@ -39,6 +42,9 @@ let persons = [
   
   app.post('/api/persons', (request, response) => {
     const body = request.body
+    const prm = request.params
+    console.log(body)
+    console.log(prm)
     if (!body.content) {
       return response.status(400).json({ 
         error: 'Name or phone is missing' 
